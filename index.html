@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>328 Photography — Gallery</title>
+  <meta name="description" content="Monochromatic Moments Of Stolen Time" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0a0a0a;
+      --bg-card:      #0f0f0f;
+      --bg-deep:      #080808;
+      --surface:      #141414;
+      --border:       #1e1e1e;
+      --border-soft:  #171717;
+      --text-bright:  #f0ece4;
+      --text-mid:     #b0aa9f;
+      --text-muted:   #7a756e;
+      --text-faint:   #4a4640;
+      --gold:         #c9a84c;
+      --gold-dim:     rgba(201,168,76,0.18);
+      --gold-glow:    rgba(201,168,76,0.06);
+      --font-sans:    'DM Sans', sans-serif;
+      --font-serif:   'Playfair Display', serif;
+      --ease:         0.25s ease;
+      --ease-slow:    0.6s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-bright);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      /* Subtle film grain overlay */
+      position: relative;
+    }
+
+    /* Film grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      /* Subtle gold rule at bottom */
+      box-shadow: 0 1px 0 0 var(--border), 0 2px 0 0 rgba(201,168,76,0.08);
+    }
+
+    .site-title {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-bright);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      transition: opacity var(--ease);
+    }
+
+    .site-title:hover { opacity: 0.75; }
+
+    .site-title-num {
+      font-weight: 200;
+      letter-spacing: 0.14em;
+    }
+
+    .site-title-word {
+      font-weight: 500;
+      letter-spacing: 0.22em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-back {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back::before {
+      content: '←';
+      color: var(--gold);
+      font-size: 12px;
+      transition: transform var(--ease);
+    }
+
+    .btn-back:hover { color: var(--text-bright); }
+    .btn-back:hover::before { transform: translateX(-3px); }
+
+    .btn-shop {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      border: 1px solid var(--gold-dim);
+      border-radius: 999px;
+      padding: 6px 16px;
+      transition: all var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gold shimmer on shop button */
+    .btn-shop::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.25), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    .btn-shop:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    @keyframes shimmer {
+      0%   { left: -100%; }
+      50%  { left: 150%; }
+      100% { left: 150%; }
+    }
+
+    /* ── GOLD RULE ── */
+    .gold-rule {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+      margin: 0 auto;
+      transition: width 1s ease;
+    }
+
+    .gold-rule.visible { width: 100%; }
+
+    /* ── PAGE INTRO ── */
+    .page-intro {
+      padding: 48px 28px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity var(--ease-slow), transform var(--ease-slow);
+    }
+
+    .page-intro.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 400;
+      color: var(--text-bright);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .page-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .gold-rule-wrap {
+      padding: 20px 28px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── HINT ── */
+    .enlarge-hint {
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+      text-align: center;
+      text-transform: uppercase;
+      padding: 28px 0 8px;
+      opacity: 0;
+      transition: opacity 1s ease 0.4s;
+    }
+
+    .enlarge-hint.visible { opacity: 1; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 28px 80px;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--bg-card);
+      /* Scroll animation */
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease,
+        box-shadow var(--ease);
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card img,
+    .card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      /* Blur-to-sharp image load */
+      filter: blur(12px);
+      transition: filter 0.7s ease, transform 0.4s ease;
+    }
+
+    .card img.loaded,
+    .card video.loaded {
+      filter: blur(0);
+    }
+
+    .card:hover img,
+    .card:hover video {
+      transform: scale(1.03);
+    }
+
+    /* Subtle depth shadow on card edges */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--ease);
+    }
+
+    .card:hover::after { opacity: 1; }
+
+    /* ── SKELETON ── */
+    .skeleton {
+      aspect-ratio: 1 / 1;
+      background: var(--surface);
+      animation: sk-pulse 1.8s ease infinite;
+    }
+
+    @keyframes sk-pulse {
+      0%, 100% { opacity: 0.3; }
+      50%       { opacity: 0.6; }
+    }
+
+    /* ── STATES ── */
+    #error-state, #empty-state {
+      display: none;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    #error-state.visible, #empty-state.visible { display: block; }
+
+    #error-state a {
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      font-size: 11px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-top: 12px;
+    }
+
+    /* ── LIGHTBOX OVERLAY ── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      background: rgba(0, 0, 0, 0.96);
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    #lightbox.open { display: flex; }
+
+    .lightbox-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 24px 24px;
+      position: relative;
+    }
+
+    /* Close */
+    .lb-close {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: color var(--ease), border-color var(--ease);
+      line-height: 1;
+      z-index: 10;
+    }
+
+    .lb-close:hover { color: var(--text-bright); border-color: var(--gold); }
+
+    /* Media wrap */
+    .lb-media-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+      min-height: 0;
+    }
+
+    /* Spinner */
+    .lb-spinner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .lb-spinner-ring {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(10,10,10,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .lb-spinner-ring::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      border-top-color: var(--gold);
+      border-right-color: rgba(201,168,76,0.3);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .lb-spinner.hidden { display: none; }
+
+    /* Blurred thumbnail behind full res */
+    .lb-thumb {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: blur(18px);
+      opacity: 0.6;
+      z-index: 0;
+      transform: scale(1.05);
+    }
+
+    /* Full res image */
+    .lb-img {
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .lb-img.loaded { opacity: 1; }
+
+    .lb-video {
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── LIGHTBOX INFO ── */
+    .lb-info {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 900px;
+      padding: 20px 0 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+    }
+
+    .lb-info.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .lb-text { flex: 1; min-width: 0; }
+
+    .lb-title {
+      font-family: var(--font-serif);
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 400;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lb-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 560px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .lb-gold-rule {
+      width: 100%;
+      max-width: 900px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.3;
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+
+    /* View in shop button */
+    .btn-view-shop {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      border: 1px solid var(--gold-dim);
+      border-radius: 999px;
+      padding: 8px 20px;
+      transition: all var(--ease);
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .btn-view-shop::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    .btn-view-shop:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 14px var(--gold-glow);
+    }
+
+    /* Timeout message */
+    .lb-timeout {
+      display: none;
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .lb-timeout.visible { display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-title {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .footer-title span { font-weight: 200; }
+
+    .footer-tagline {
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 10px;
+      color: var(--text-faint);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color var(--ease);
+    }
+
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      main { padding: 0 16px 60px; }
+
+      .page-intro { padding: 32px 16px 0; }
+      .gold-rule-wrap { padding: 16px 16px 0; }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+      }
+
+      .btn-back span { display: none; }
+
+      .lightbox-inner { padding: 60px 16px 16px; }
+
+      .lb-info { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+      .lb-description { -webkit-line-clamp: 3; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .page-intro, .enlarge-hint, .lb-info, .gold-rule {
+        transition: none;
+        opacity: 1;
+        transform: none;
+        width: 100%;
+      }
+      .lb-spinner-ring::before { animation: none; }
+      .btn-shop::after, .btn-view-shop::after { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="site-title" href="https://328photography.xyz">
+    <span class="site-title-num">328&nbsp;</span><span class="site-title-word">Photography</span>
+  </a>
+  <div class="header-right">
+    <a class="btn-back" href="https://328photography.xyz"><span>Back to Site</span></a>
+    <a class="btn-shop" href="https://shop.328photography.xyz">Visit Shop</a>
+  </div>
+</header>
+
+<!-- PAGE INTRO -->
+<div class="page-intro" id="page-intro">
+  <h1 class="page-title">Gallery</h1>
+  <p class="page-tagline">Primary works available</p>
+</div>
+
+<div class="gold-rule-wrap">
+  <div class="gold-rule" id="gold-rule"></div>
+</div>
+
+<!-- HINT -->
+<p class="enlarge-hint" id="enlarge-hint">Tap any image to expand</p>
+
+<!-- MAIN -->
+<main>
+  <div class="grid" id="grid"></div>
+  <div id="error-state">
+    <p>Unable to load works right now.</p>
+    <a href="https://objkt.com/profile/328jesse/created" target="_blank" rel="noopener">View on Objkt →</a>
+  </div>
+  <div id="empty-state"><p>No primary works listed.</p></div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-title"><span>328 </span>Photography</div>
+  <div class="footer-tagline">Monochromatic Moments Of Stolen Time</div>
+  <div class="footer-links">
+    <a href="https://328photography.xyz">Home</a>
+    <a href="https://shop.328photography.xyz">Shop</a>
+    <a href="https://objkt.com/profile/328jesse/created" target="_blank" rel="noopener">Objkt</a>
+    <a href="https://twitter.com/328_lad" target="_blank" rel="noopener">X / Twitter</a>
+    <a href="https://www.instagram.com/jesse_328_james/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div class="lightbox-inner">
+    <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
+
+    <div class="lb-media-wrap" id="lb-media-wrap">
+      <div class="lb-spinner" id="lb-spinner">
+        <div class="lb-spinner-ring"></div>
+      </div>
+      <!-- thumb + full res injected here -->
+    </div>
+
+    <div class="lb-gold-rule"></div>
+
+    <div class="lb-info" id="lb-info">
+      <div class="lb-text">
+        <div class="lb-title" id="lb-title"></div>
+        <div class="lb-description" id="lb-description"></div>
+        <div class="lb-timeout" id="lb-timeout">Taking a little longer than usual…</div>
+      </div>
+      <a class="btn-view-shop" id="lb-shop-link" href="#" target="_blank" rel="noopener">View in Shop</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────
+// CONFIG
+// ─────────────────────────────
+const CREATOR      = 'tz1aACaaDefdyjVduoFyUi9Rhde6nsmhHunw';
+const GRAPHQL      = 'https://data.objkt.com/v3/graphql';
+const SHOP_BASE    = 'https://shop.328photography.xyz';
+
+// ─────────────────────────────
+// STATE
+// ─────────────────────────────
+let tokens = [];
+
+// ─────────────────────────────
+// ELEMENTS
+// ─────────────────────────────
+const grid        = document.getElementById('grid');
+const errorState  = document.getElementById('error-state');
+const emptyState  = document.getElementById('empty-state');
+const lightbox    = document.getElementById('lightbox');
+const lbClose     = document.getElementById('lb-close');
+const lbMediaWrap = document.getElementById('lb-media-wrap');
+const lbSpinner   = document.getElementById('lb-spinner');
+const lbInfo      = document.getElementById('lb-info');
+const lbTitle     = document.getElementById('lb-title');
+const lbDesc      = document.getElementById('lb-description');
+const lbShopLink  = document.getElementById('lb-shop-link');
+const lbTimeout   = document.getElementById('lb-timeout');
+
+// ─────────────────────────────
+// FETCH PRIMARY LISTINGS ONLY
+// ─────────────────────────────
+async function fetchPrimaryTokens() {
+  showSkeletons();
+  try {
+    const query = `
+      query($creator: String!) {
+        token(
+          where: {
+            creators: { creator_address: { _eq: $creator } }
+            listings_active: {
+              seller_address: { _eq: $creator }
+            }
+          }
+          order_by: { timestamp: desc }
+          limit: 200
+        ) {
+          token_id
+          name
+          description
+          display_uri
+          artifact_uri
+          mime
+          supply
+          fa { contract }
+          listings_active(
+            where: { seller_address: { _eq: $creator } }
+            order_by: { price: asc }
+            limit: 1
+          ) {
+            price
+            seller_address
+          }
+        }
+      }
+    `;
+
+    const res = await fetch(GRAPHQL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables: { creator: CREATOR } })
+    });
+
+    const data = await res.json();
+    if (data.errors) throw new Error(data.errors[0].message);
+
+    const raw = data.data.token || [];
+    const seen = new Set();
+
+    tokens = raw.filter(t => {
+      const key = `${t.fa?.contract}:${t.token_id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return t.supply && t.supply > 0 && t.listings_active?.length > 0;
+    });
+
+    grid.innerHTML = '';
+
+    if (tokens.length === 0) {
+      emptyState.classList.add('visible');
+      return;
+    }
+
+    tokens.forEach((token, i) => {
+      const card = buildCard(token, i);
+      grid.appendChild(card);
+    });
+
+    // Trigger entrance animations
+    requestAnimationFrame(() => {
+      document.getElementById('page-intro').classList.add('visible');
+      document.getElementById('enlarge-hint').classList.add('visible');
+      document.getElementById('gold-rule').classList.add('visible');
+      observeCards();
+    });
+
+  } catch (e) {
+    console.error(e);
+    grid.innerHTML = '';
+    errorState.classList.add('visible');
+  }
+}
+
+// ─────────────────────────────
+// BUILD CARD
+// ─────────────────────────────
+function buildCard(token, index) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.transitionDelay = `${Math.min(index * 0.05, 0.4)}s`;
+
+  const mediaUrl  = ipfsToHttp(token.display_uri || token.artifact_uri, false);
+  const mime      = token.mime || '';
+  const isVideo   = mime.includes('video') || mediaUrl.match(/\.(mp4|webm|mov|ogv)(\?|$)/i);
+
+  if (isVideo) {
+    const vid = document.createElement('video');
+    vid.src      = mediaUrl;
+    vid.autoplay = true;
+    vid.muted    = true;
+    vid.loop     = true;
+    vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.addEventListener('canplay', () => vid.classList.add('loaded'));
+    card.appendChild(vid);
+  } else {
+    const img  = document.createElement('img');
+    img.src    = mediaUrl;
+    img.alt    = token.name || 'Artwork';
+    img.loading = index < 6 ? 'eager' : 'lazy';
+    img.addEventListener('load', () => img.classList.add('loaded'));
+    img.addEventListener('error', () => img.classList.add('loaded'));
+    card.appendChild(img);
+  }
+
+  card.addEventListener('click', () => openLightbox(token));
+  return card;
+}
+
+// ─────────────────────────────
+// SCROLL-TRIGGERED CARD REVEAL
+// ─────────────────────────────
+function observeCards() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -40px 0px', threshold: 0.05 });
+
+  document.querySelectorAll('.card').forEach(c => io.observe(c));
+}
+
+// ─────────────────────────────
+// LIGHTBOX
+// ─────────────────────────────
+function openLightbox(token) {
+  const thumbUrl    = ipfsToHttp(token.display_uri || token.artifact_uri, false);
+  const fullResUrl  = ipfsToHttp(token.artifact_uri || token.display_uri, true);
+  const mime        = token.mime || '';
+  const isVideo     = mime.includes('video') || fullResUrl.match(/\.(mp4|webm|mov|ogv)(\?|$)/i);
+  const shopUrl     = `${SHOP_BASE}/token/${token.fa?.contract}/${token.token_id}`;
+
+  // Clear previous media
+  Array.from(lbMediaWrap.children).forEach(c => {
+    if (c !== lbSpinner) c.remove();
+  });
+
+  lbSpinner.classList.remove('hidden');
+  lbInfo.classList.remove('visible');
+  lbTimeout.classList.remove('visible');
+
+  if (isVideo) {
+    const vid = document.createElement('video');
+    vid.className = 'lb-video';
+    vid.src = fullResUrl;
+    vid.controls = true;
+    vid.autoplay = true;
+    vid.muted = true;
+    vid.loop = true;
+    vid.addEventListener('canplay', () => {
+      lbSpinner.classList.add('hidden');
+      lbInfo.classList.add('visible');
+    });
+    lbMediaWrap.appendChild(vid);
+  } else {
+    // Blurred thumbnail behind full res
+    const thumb = document.createElement('img');
+    thumb.className = 'lb-thumb';
+    thumb.src = thumbUrl;
+    thumb.alt = '';
+    thumb.setAttribute('aria-hidden', 'true');
+    lbMediaWrap.appendChild(thumb);
+
+    // Full res
+    const img = document.createElement('img');
+    img.className = 'lb-img';
+    img.alt = token.name || 'Artwork';
+
+    // Timeout warning
+    const timeoutId = setTimeout(() => {
+      lbTimeout.classList.add('visible');
+    }, 8000);
+
+    img.addEventListener('load', () => {
+      clearTimeout(timeoutId);
+      lbSpinner.classList.add('hidden');
+      lbTimeout.classList.remove('visible');
+      img.classList.add('loaded');
+      lbInfo.classList.add('visible');
+    });
+
+    img.addEventListener('error', () => {
+      clearTimeout(timeoutId);
+      lbSpinner.classList.add('hidden');
+      // Fall back to thumbnail
+      img.src = thumbUrl;
+      img.classList.add('loaded');
+      lbInfo.classList.add('visible');
+    });
+
+    img.src = fullResUrl;
+    lbMediaWrap.appendChild(img);
+  }
+
+  // Info
+  lbTitle.textContent       = token.name || 'Untitled';
+  lbDesc.textContent        = token.description || '';
+  lbShopLink.href           = shopUrl;
+
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+  lbTimeout.classList.remove('visible');
+
+  // Pause video + clear
+  const vid = lbMediaWrap.querySelector('video');
+  if (vid) vid.pause();
+  setTimeout(() => {
+    Array.from(lbMediaWrap.children).forEach(c => {
+      if (c !== lbSpinner) c.remove();
+    });
+    lbSpinner.classList.remove('hidden');
+    lbInfo.classList.remove('visible');
+  }, 300);
+}
+
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => { if (e.target === lightbox || e.target.classList.contains('lightbox-inner')) closeLightbox(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Swipe to close on mobile
+let touchStartY = 0;
+lightbox.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+lightbox.addEventListener('touchend', e => {
+  const delta = e.changedTouches[0].clientY - touchStartY;
+  if (delta > 80) closeLightbox();
+}, { passive: true });
+
+// ─────────────────────────────
+// SKELETONS
+// ─────────────────────────────
+function showSkeletons() {
+  grid.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const sk = document.createElement('div');
+    sk.className = 'skeleton';
+    grid.appendChild(sk);
+  }
+}
+
+// ─────────────────────────────
+// UTILS
+// ─────────────────────────────
+function ipfsToHttp(uri, fullRes = false) {
+  if (!uri) return '';
+  if (uri.startsWith('ipfs://')) {
+    const cid = uri.slice(7);
+    return `https://ipfs.io/ipfs/${cid}`;
+  }
+  return uri;
+}
+
+// ─────────────────────────────
+// INIT
+// ─────────────────────────────
+window.addEventListener('load', fetchPrimaryTokens);
+</script>
+</body>
+</html>
