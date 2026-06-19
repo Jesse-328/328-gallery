@@ -479,6 +479,11 @@
       transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
     }
 
+    .lb-actions {
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+
     .lb-info.visible {
       opacity: 1;
       transform: translateY(0);
@@ -746,7 +751,7 @@
         <div class="lb-description" id="lb-description"></div>
         <div class="lb-timeout" id="lb-timeout">Taking a little longer than usual…</div>
       </div>
-      <a class="btn-view-shop" id="lb-shop-link" href="#" target="_blank" rel="noopener">View in Shop</a>
+      <div class="lb-actions"><a class="btn-view-shop" id="lb-shop-link" href="#" target="_blank" rel="noopener">View in Shop</a></div>
     </div>
   </div>
 </div>
