@@ -149,8 +149,7 @@
       margin: 0 auto;
     }
 
-    /* ── PROJECT SELECTOR (gallery) ── */
-    /* Sits between gold rule and hint. Minimal — just a quiet text trigger */
+    /* ── PROJECT SELECTOR ── */
     .project-selector-wrap {
       max-width: 1400px;
       margin: 0 auto;
@@ -202,7 +201,7 @@
       opacity: 1;
     }
 
-    /* ── PROJECT OVERLAY (shared style, gallery variant) ── */
+    /* ── PROJECT OVERLAY ── */
     #project-overlay {
       display: none;
       position: fixed;
@@ -381,6 +380,8 @@
       text-transform: uppercase; color: var(--text-muted); text-decoration: none;
       border: 1px solid var(--gold-dim); border-radius: 999px; padding: 8px 20px;
       transition: all var(--ease); position: relative; overflow: hidden; white-space: nowrap;
+      /* Ensure tappable on mobile */
+      min-height: 44px; display: flex; align-items: center; justify-content: center;
     }
     .btn-view-shop::after {
       content: ''; position: absolute; top: 0; left: -100%;
@@ -398,7 +399,7 @@
     .footer-title { font-size: 11px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
     .footer-title span { font-weight: 200; }
     .footer-tagline { font-size: 10px; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; }
-    .footer-links { display: flex; gap: 20px; }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
     .footer-links a { font-size: 10px; color: var(--text-faint); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color var(--ease); }
     .footer-links a:hover { color: var(--gold); }
 
@@ -413,9 +414,18 @@
       .project-selector-wrap { padding: 16px 16px 0; }
       .grid { grid-template-columns: repeat(2, 1fr); gap: 2px; }
       .btn-back span { display: none; }
-      .lightbox-inner { padding: 60px 16px 16px; }
-      .lb-info { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .lightbox-inner { padding: 60px 16px 16px; justify-content: flex-start; overflow-y: auto; }
+      /* On mobile, stack media above info; media gets a fixed portion of screen */
+      .lb-media-wrap { flex: none; width: 100%; height: 50vw; max-height: 42vh; min-height: 180px; }
+      .lb-info { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 0 0; }
+      /* Make the "View in Shop" button full-width on mobile for easy tapping */
+      .lb-actions { width: 100%; }
+      .btn-view-shop { width: 100%; }
       #project-overlay { padding: 72px 28px 40px; }
+    }
+
+    @media (max-width: 400px) {
+      .grid { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -448,7 +458,7 @@
   <div class="gold-rule" id="gold-rule"></div>
 </div>
 
-<!-- PROJECT SELECTOR (new — sits between gold rule and hint) -->
+<!-- PROJECT SELECTOR -->
 <div class="project-selector-wrap">
   <button
     class="project-selector-trigger"
@@ -529,21 +539,21 @@ const SHOP_BASE = 'https://shop.328photography.xyz';
 
 let tokens = [];
 
-const grid        = document.getElementById('grid');
-const errorState  = document.getElementById('error-state');
-const emptyState  = document.getElementById('empty-state');
-const lightbox    = document.getElementById('lightbox');
-const lbClose     = document.getElementById('lb-close');
-const lbMediaWrap = document.getElementById('lb-media-wrap');
-const lbSpinner   = document.getElementById('lb-spinner');
-const lbInfo      = document.getElementById('lb-info');
-const lbTitle     = document.getElementById('lb-title');
-const lbDesc      = document.getElementById('lb-description');
-const lbShopLink  = document.getElementById('lb-shop-link');
-const lbTimeout   = document.getElementById('lb-timeout');
-const projectOverlay  = document.getElementById('project-overlay');
-const projectTrigger  = document.getElementById('project-trigger');
-const projectLabelEl  = document.getElementById('project-label');
+const grid           = document.getElementById('grid');
+const errorState     = document.getElementById('error-state');
+const emptyState     = document.getElementById('empty-state');
+const lightbox       = document.getElementById('lightbox');
+const lbClose        = document.getElementById('lb-close');
+const lbMediaWrap    = document.getElementById('lb-media-wrap');
+const lbSpinner      = document.getElementById('lb-spinner');
+const lbInfo         = document.getElementById('lb-info');
+const lbTitle        = document.getElementById('lb-title');
+const lbDesc         = document.getElementById('lb-description');
+const lbShopLink     = document.getElementById('lb-shop-link');
+const lbTimeout      = document.getElementById('lb-timeout');
+const projectOverlay = document.getElementById('project-overlay');
+const projectTrigger = document.getElementById('project-trigger');
+const projectLabelEl = document.getElementById('project-label');
 
 // ── PROJECT OVERLAY ──
 function openProjectOverlay() {
@@ -696,7 +706,9 @@ function openLightbox(token) {
   const fullResUrl = ipfsToHttp(token.artifact_uri || token.display_uri);
   const mime       = token.mime || '';
   const isVideo    = mime.includes('video') || fullResUrl.match(/\.(mp4|webm|mov|ogv)(\?|$)/i);
-  const shopUrl    = `${SHOP_BASE}/token/${token.fa?.contract}/${token.token_id}`;
+
+  // ── FIX: pass current CREATOR wallet so shop loads the right project ──
+  const shopUrl = `${SHOP_BASE}/token/${token.fa?.contract}/${token.token_id}?wallet=${CREATOR}`;
 
   Array.from(lbMediaWrap.children).forEach(c => { if (c !== lbSpinner) c.remove(); });
   lbSpinner.classList.remove('hidden');
