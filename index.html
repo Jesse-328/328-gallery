@@ -668,22 +668,28 @@ function buildCard(token, index) {
   card.className = 'card';
   card.style.transitionDelay = `${Math.min(index * 0.05, 0.4)}s`;
 
-  const mediaUrl = ipfsToHttp(token.display_uri || token.artifact_uri);
   const mime     = token.mime || '';
-  const isVideo  = mime.includes('video') || mediaUrl.match(/\.(mp4|webm|mov|ogv)(\?|$)/i);
+  const artifact = token.artifact_uri || token.display_uri || '';
+  const isVideo  = mime.includes('video') || /\.(mp4|webm|mov|ogv)(\?|$)/i.test(artifact);
 
   if (isVideo) {
     const vid = document.createElement('video');
-    vid.src = mediaUrl; vid.autoplay = true; vid.muted = true; vid.loop = true; vid.playsInline = true;
+    vid.autoplay = true; vid.muted = true; vid.loop = true; vid.playsInline = true;
     vid.setAttribute('playsinline', '');
-    vid.addEventListener('canplay', () => vid.classList.add('loaded'));
+    vid.poster = objktAsset(token, 'thumb400');
+    vid.preload = 'metadata';
+    loadWithFallback(vid, [objktAsset(token, 'artifact'), ...ipfsCandidates(artifact)], () => vid.classList.add('loaded'));
     card.appendChild(vid);
   } else {
     const img = document.createElement('img');
-    img.src = mediaUrl; img.alt = token.name || 'Artwork';
+    img.alt = token.name || 'Artwork'; img.decoding = 'async';
     img.loading = index < 6 ? 'eager' : 'lazy';
-    img.addEventListener('load',  () => img.classList.add('loaded'));
-    img.addEventListener('error', () => img.classList.add('loaded'));
+    // Objkt thumbnail first (small + fast), then objkt's cached display image, then IPFS gateways.
+    loadWithFallback(img, [
+      objktAsset(token, 'thumb400'),
+      objktAsset(token, 'display'),
+      ...ipfsCandidates(token.display_uri || token.artifact_uri)
+    ], () => img.classList.add('loaded'));
     card.appendChild(img);
   }
 
@@ -702,10 +708,10 @@ function observeCards() {
 
 // ── LIGHTBOX ──
 function openLightbox(token) {
-  const thumbUrl   = ipfsToHttp(token.display_uri || token.artifact_uri);
-  const fullResUrl = ipfsToHttp(token.artifact_uri || token.display_uri);
+  const artifact   = token.artifact_uri || token.display_uri || '';
+  const thumbUrl   = objktAsset(token, 'thumb400');
   const mime       = token.mime || '';
-  const isVideo    = mime.includes('video') || fullResUrl.match(/\.(mp4|webm|mov|ogv)(\?|$)/i);
+  const isVideo    = mime.includes('video') || /\.(mp4|webm|mov|ogv)(\?|$)/i.test(artifact);
 
   // ── FIX: pass current CREATOR wallet so shop loads the right project ──
   const shopUrl = `${SHOP_BASE}/token/${token.fa?.contract}/${token.token_id}?wallet=${CREATOR}`;
@@ -717,17 +723,26 @@ function openLightbox(token) {
 
   if (isVideo) {
     const vid = document.createElement('video');
-    vid.className = 'lb-video'; vid.src = fullResUrl; vid.controls = true;
+    vid.className = 'lb-video'; vid.controls = true;
     vid.autoplay = true; vid.muted = true; vid.loop = true;
-    vid.addEventListener('canplay', () => { lbSpinner.classList.add('hidden'); lbInfo.classList.add('visible'); });
+    vid.poster = thumbUrl;
+    loadWithFallback(vid, [objktAsset(token, 'artifact'), ...ipfsCandidates(artifact)], () => { lbSpinner.classList.add('hidden'); lbInfo.classList.add('visible'); });
     lbMediaWrap.appendChild(vid);
   } else {
     const thumb = document.createElement('img'); thumb.className = 'lb-thumb'; thumb.src = thumbUrl; thumb.alt = ''; thumb.setAttribute('aria-hidden', 'true'); lbMediaWrap.appendChild(thumb);
     const img = document.createElement('img'); img.className = 'lb-img'; img.alt = token.name || 'Artwork';
     const timeoutId = setTimeout(() => lbTimeout.classList.add('visible'), 8000);
-    img.addEventListener('load', () => { clearTimeout(timeoutId); lbSpinner.classList.add('hidden'); lbTimeout.classList.remove('visible'); img.classList.add('loaded'); lbInfo.classList.add('visible'); });
-    img.addEventListener('error', () => { clearTimeout(timeoutId); lbSpinner.classList.add('hidden'); img.src = thumbUrl; img.classList.add('loaded'); lbInfo.classList.add('visible'); });
-    img.src = fullResUrl; lbMediaWrap.appendChild(img);
+    // Objkt's cached display image first (screen-sized, fast), IPFS display_uri next, original artifact as last resort.
+    loadWithFallback(img, [
+      objktAsset(token, 'display'),
+      ...ipfsCandidates(token.display_uri),
+      ...ipfsCandidates(token.artifact_uri)
+    ], ok => {
+      clearTimeout(timeoutId); lbSpinner.classList.add('hidden'); lbTimeout.classList.remove('visible');
+      if (!ok) img.src = thumbUrl;
+      img.classList.add('loaded'); lbInfo.classList.add('visible');
+    });
+    lbMediaWrap.appendChild(img);
   }
 
   lbTitle.textContent = token.name || 'Untitled';
@@ -774,10 +789,38 @@ function showSkeletons() {
 }
 
 // ── UTILS ──
-function ipfsToHttp(uri) {
-  if (!uri) return '';
-  if (uri.startsWith('ipfs://')) return 'https://ipfs.io/ipfs/' + uri.slice(7);
-  return uri;
+// Objkt's own image CDN. Sizes: thumb288, thumb400 (thumbnails), display (full display_uri), artifact (raw file).
+const OBJKT_CDN = 'https://assets.objkt.media/file/assets-003';
+const IPFS_GATEWAYS = ['https://ipfs.io/ipfs/', 'https://dweb.link/ipfs/', 'https://gateway.pinata.cloud/ipfs/'];
+
+function objktAsset(token, size) {
+  const contract = token.fa?.contract;
+  if (!contract || token.token_id == null) return '';
+  return `${OBJKT_CDN}/${contract}/${token.token_id}/${size}`;
+}
+
+// All HTTP candidates for an ipfs:// (or plain http) URI, one per gateway.
+function ipfsCandidates(uri) {
+  if (!uri) return [];
+  if (uri.startsWith('ipfs://')) return IPFS_GATEWAYS.map(g => g + uri.slice(7));
+  return [uri];
+}
+
+function ipfsToHttp(uri) { return ipfsCandidates(uri)[0] || ''; }
+
+// Sets el.src to the first URL and walks the list on error. Calls onDone(ok) when settled.
+function loadWithFallback(el, urls, onDone) {
+  const list = urls.filter(Boolean).filter((u, i, a) => a.indexOf(u) === i);
+  let i = 0;
+  const okEvent = el.tagName === 'VIDEO' ? 'canplay' : 'load';
+  const tryNext = () => {
+    if (i >= list.length) { el.removeEventListener('error', tryNext); onDone && onDone(false); return; }
+    el.src = list[i++];
+    if (el.tagName === 'VIDEO') el.load();
+  };
+  el.addEventListener(okEvent, () => onDone && onDone(true), { once: true });
+  el.addEventListener('error', tryNext);
+  tryNext();
 }
 
 // ── INIT ──
